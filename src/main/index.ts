@@ -1,19 +1,21 @@
-import { app, shell, BrowserWindow, BrowserView } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import {app, shell, BrowserWindow, BrowserView, ipcMain, ipcRenderer} from 'electron'
+import {join} from 'path'
+import {electronApp, optimizer, is} from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
-    height: 670,
+    height: 600,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    ...(process.platform === 'linux' ? {icon} : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      nodeIntegration: true,
+      contextIsolation: false
     }
   })
 
@@ -23,8 +25,9 @@ function createWindow(): void {
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
-    return { action: 'deny' }
+    return {action: 'deny'}
   })
+
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -33,6 +36,67 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+
+  const browserViewArr: object[] = [];
+  browserViewArr.push({
+    name: 'baidu',
+    bit: 1,
+    src: 'https://www.baidu.com',
+    view: null
+  }, {
+    name: '360',
+    bit: 2,
+    src: 'https://www.360.com',
+    view: null
+  })
+
+
+  ipcMain.on('showEvent', (event, showBit) => {
+
+    browserViewArr.forEach(item => {
+      if ((item.bit & showBit) == item.bit) {
+        if (item.view !== null) {
+          return
+        }
+        //创建对象
+        const view = new BrowserView()
+        view.setAutoResize({horizontal: true, vertical: true})
+        //设置在主窗口的位置和view的大小
+        view.setBounds({x: 0, y: 0, width: 100, height: 100})
+        //设置到主窗口
+        mainWindow.addBrowserView(view)
+        view.webContents.loadURL(item.src)
+
+        item.view = view
+
+      } else {
+        if (item.view != null) {
+          mainWindow.removeBrowserView(item.view)
+          item.view = null;
+        }
+      }
+    })
+
+    // browserViewArr.forEach((item, index, arr) => {
+    //   console.log(item, index, arr)
+    // })
+
+    let objects = browserViewArr.filter(_ => _.view != null);
+    let viewNum = objects.length;
+    if (viewNum !== 0) {
+      const mainWindowHeight = mainWindow.getSize()[1]
+      const mainWindowWidth = mainWindow.getSize()[0]
+      const itemHeight = Math.floor(((mainWindowHeight - 40) / viewNum)-20)
+
+      objects.forEach((item, index) => {
+        item.view.setBounds({x: 0, y: index * itemHeight, width: mainWindowWidth, height: itemHeight})
+        console.log(item.view.getBounds())
+      })
+    }
+
+  })
+
 }
 
 // This method will be called when Electron has finished

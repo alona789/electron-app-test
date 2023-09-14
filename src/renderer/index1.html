@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Electron</title>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    />
+  </head>
+  <style>
+    .buttons {
+      position: absolute;
+      height: 40px;
+      bottom: 0;
+    }
+  </style>
+
+  <body>
+    <div id="app"></div>
+    <div class="buttons">
+      <button onclick="showBit = 1">打开百度</button>
+      <button onclick="showBit = 2">打开360</button>
+      <button onclick="showBit = 3">打开百度和360</button>
+    </div>
+  </body>
+  <script>
+    var showBit = 1
+  </script>
+</html>
