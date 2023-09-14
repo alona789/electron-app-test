@@ -48,11 +48,13 @@ function createWindow(): void {
   browserViewArr.push({
     name: 'baidu',
     bit: 1,
-    src: 'https://www.baidu.com'
+    src: 'https://www.baidu.com',
+    view: null
   }, {
     name: '360',
     bit: 2,
-    src: 'https://www.360.com'
+    src: 'https://www.360.com',
+    view: null
   })
 
 
@@ -76,7 +78,7 @@ function createWindow(): void {
         item.view = view
 
       } else {
-        if (item.view != null) {
+        if (item.view != null && item.view) {
           mainWindow.removeBrowserView(item.view)
           item.view = null;
         }
@@ -87,7 +89,7 @@ function createWindow(): void {
     //   console.log(item, index, arr)
     // })
 
-    let objects = browserViewArr.filter(_ => _.view != null);
+    let objects = browserViewArr.filter(_ => _.view != null && _.view);
     let viewNum = objects.length;
     if (viewNum !== 0) {
       const mainWindowHeight = mainWindow.getSize()[1]
