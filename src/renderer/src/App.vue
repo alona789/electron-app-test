@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import Versions from './components/Versions.vue'
 
-import {ref, reactive, watch} from 'vue'
+import {ref, watch} from 'vue'
 
 const showBit = ref(0)
 // 一个用法走天下
@@ -15,11 +14,6 @@ watch(
 </script>
 
 <template>
-  <!--  <Versions></Versions>-->
-<!--  <div class="links">-->
-<!--    <iframe v-if="(showBit & 1) === 1" src="https://www.baidu.com" title="baidu"></iframe>-->
-<!--    <iframe v-if="(showBit & 2) === 2" src="https://www.360.com" title="360"></iframe>-->
-<!--  </div>-->
   <div class="features">
     <button class="feature-item" @click="showBit = 1">打开百度</button>
     <button class="feature-item" @click="showBit = 2">打开360</button>

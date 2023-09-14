@@ -1,4 +1,4 @@
-import {app, shell, BrowserWindow, BrowserView, ipcMain, ipcRenderer} from 'electron'
+import {app, shell, BrowserWindow, BrowserView, ipcMain} from 'electron'
 import {join} from 'path'
 import {electronApp, optimizer, is} from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -37,22 +37,27 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
+  interface CustomBrowserView {
+    name: string;
+    bit: number;
+    src: string;
+    view?: BrowserView | null;
+  }
 
-  const browserViewArr: object[] = [];
+  const browserViewArr: CustomBrowserView[] = [];
   browserViewArr.push({
     name: 'baidu',
     bit: 1,
-    src: 'https://www.baidu.com',
-    view: null
+    src: 'https://www.baidu.com'
   }, {
     name: '360',
     bit: 2,
-    src: 'https://www.360.com',
-    view: null
+    src: 'https://www.360.com'
   })
 
 
   ipcMain.on('showEvent', (event, showBit) => {
+    console.log(event)
 
     browserViewArr.forEach(item => {
       if ((item.bit & showBit) == item.bit) {
@@ -90,8 +95,8 @@ function createWindow(): void {
       const itemHeight = Math.floor(((mainWindowHeight - 40) / viewNum)-20)
 
       objects.forEach((item, index) => {
-        item.view.setBounds({x: 0, y: index * itemHeight, width: mainWindowWidth, height: itemHeight})
-        console.log(item.view.getBounds())
+        item.view?.setBounds({x: 0, y: index * itemHeight, width: mainWindowWidth, height: itemHeight})
+        console.log(item.view?.getBounds())
       })
     }
 
